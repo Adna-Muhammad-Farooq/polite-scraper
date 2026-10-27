@@ -1,0 +1,21 @@
+# Python virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+
+# Scraped HTML cache
+cache/
+
+# Generated output
+output/
+
+# Editor and OS files
+.vscode/
+.DS_Store
+Thumbs.db
