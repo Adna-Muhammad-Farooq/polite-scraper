@@ -1,27 +1,83 @@
 # Polite Scraper
 
-A Python web scraper for the FlyRank Backend AI Engineering Week 5 assignment.
+A Python web scraper built for the FlyRank Backend AI Engineering assignment. It collects book information from [Books to Scrape](https://books.toscrape.com/), a website designed for scraping practice.
 
-## Stage 0: Target Classification
+## Project Scope
 
-- **Target:** [Books to Scrape](https://books.toscrape.com/)
-- **Purpose:** Practice collecting book information from a website designed for scraping exercises.
-- **Scope:** The first three catalogue pages and the 60 unique book detail pages linked from them.
-- **Data collected:** Book title, product URL, price, availability, rating, description, source page, and fetch timestamp.
-- **robots.txt check:** Opened https://books.toscrape.com/robots.txt. The browser showed a blank page; no directives were visible. This result has not been treated as permission by itself.
-- **Politeness:** The scraper will identify itself with a User-Agent, use a timeout, wait at least 500 ms between real requests, check HTTP status codes, and reuse cached HTML during development.
+The scraper inspects the first three catalogue pages and discovers unique book detail URLs.
 
-### Responsible Scraping
+It collects the following fields:
 
-I will not reuse this code on another site without checking its rules and terms first.
+- Book title
+- Product URL
+- Original price text
+- Normalized price in GBP
+- Availability
+- Star rating
+- Book description
+- Source catalogue page
+- Fetch timestamp
 
-## Planned Output
+## Technologies
 
-- `cache/`: Saved HTML pages.
-- `output/books.json`: Clean, validated book records.
-- `output/errors.json`: Records that fail validation.
-- `output/run-report.json`: Summary of the scraper run.
+- Python
+- Requests
+- Beautiful Soup
+- JSON Schema validation
 
-## Status
+## Features
 
-Stage 0 documentation started. Later stages will be recorded as they are implemented and tested.
+- Fetches catalogue and book detail pages.
+- Caches downloaded HTML to reduce repeated network requests.
+- Uses a descriptive User-Agent and request timeout.
+- Waits between network requests.
+- Retries temporary request failures up to three times.
+- Extracts and normalizes book prices.
+- Validates records against `schema.json`.
+- Handles fetch, extraction, and validation errors.
+- Saves records, errors, and a run summary as JSON.
+
+## Project Structure
+
+```text
+polite-scraper/
+├── src/
+│   └── main.py
+├── schema.json
+├── requirements.txt
+├── .gitignore
+└── README.md
+```
+
+The `cache/` and `output/` directories are generated locally. They should remain excluded from Git.
+
+## Setup
+
+Create and activate a virtual environment on Windows:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+Install dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+Run the scraper from the project root:
+
+```powershell
+python src/main.py
+```
+
+## Output Files
+
+The scraper generates these files in the `output/` directory:
+
+- `books.json`: successfully extracted and validated book records.
+- `errors.json`: recorded fetch, extraction, and validation errors.
+- `run-report.json`: summary of the latest run.
+
+Downloaded HTML is stored in `

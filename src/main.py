@@ -42,8 +42,9 @@ REQUEST_DELAY_SECONDS = 0.5
 # Fetch pages and reuse cached HTML
 # --------------------------------------------------
 
+
 def fetch_page(url):
-    """Fetch a page and reuse cached HTML when available."""
+    """Fetch a page, reuse cached HTML, and retry temporary failures."""
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -56,7 +57,6 @@ def fetch_page(url):
 
     else:
         # Book URLs end with /index.html.
-        # Use the book's unique folder name for the cache file.
         path_parts = url.rstrip("/").split("/")
 
         if path_parts[-1] == "index.html" and len(path_parts) >= 2:
@@ -72,31 +72,45 @@ def fetch_page(url):
         print(f"CACHE HIT | {cache_name}")
         return cache_file.read_text(encoding="utf-8")
 
-    # Wait before making a real network request.
-    time.sleep(REQUEST_DELAY_SECONDS)
+    # Retry temporary network failures up to 3 times.
+    max_attempts = 3
 
-    try:
-        response = requests.get(
-            url,
-            headers=HEADERS,
-            timeout=TIMEOUT_SECONDS,
-        )
-        response.raise_for_status()
+    for attempt in range(1, max_attempts + 1):
+        # Be polite to the website before each network attempt.
+        time.sleep(REQUEST_DELAY_SECONDS)
 
-        if response.status_code != 200:
-            raise requests.HTTPError(
-                f"Expected HTTP 200, received {response.status_code}"
+        try:
+            response = requests.get(
+                url,
+                headers=HEADERS,
+                timeout=TIMEOUT_SECONDS,
+            )
+            response.raise_for_status()
+
+            if response.status_code != 200:
+                raise requests.HTTPError(
+                    f"Expected HTTP 200, received {response.status_code}"
+                )
+
+            response.encoding = response.apparent_encoding
+            html = response.text
+            cache_file.write_text(html, encoding="utf-8")
+
+            print(f"FETCH | status={response.status_code} | {url}")
+            return html
+
+        except requests.RequestException as error:
+            print(
+                f"FETCH ATTEMPT {attempt}/{max_attempts} FAILED "
+                f"| {url} | {error}"
             )
 
-        cache_file.write_text(response.text, encoding="utf-8")
+            if attempt < max_attempts:
+                time.sleep(1)
 
-        print(f"FETCH | status={response.status_code} | {url}")
+    print(f"FETCH FAILED AFTER {max_attempts} ATTEMPTS | {url}")
+    return None
 
-        return response.text
-
-    except requests.RequestException as error:
-        print(f"FETCH FAILED | {url} | {error}")
-        return None
 
 
 # --------------------------------------------------
