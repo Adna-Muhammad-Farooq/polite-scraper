@@ -1,0 +1,53 @@
+
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "Scraped Book Record",
+"type": "object",
+"properties": {
+    "title": {
+    "type": "string",
+    "minLength": 1
+    },
+    "product_url": {
+    "type": "string",
+    "format": "uri"
+    },
+    "price_text": {
+    "type": "string",
+    "minLength": 1
+    },
+    "price_gbp": {
+    "type": "number",
+    "minimum": 0
+    },
+    "availability_text": {
+    "type": "string"
+    },
+    "rating_text": {
+    "type": "string"
+    },
+    "description": {
+    "type": ["string", "null"]
+    },
+    "source_page": {
+    "type": "string",
+    "format": "uri"
+    },
+    "fetched_at": {
+    "type": "string",
+    "format": "date-time"
+    }
+},
+"required": [
+    "title",
+    "product_url",
+    "price_text",
+    "price_gbp",
+    "availability_text",
+    "rating_text",
+    "description",
+    "source_page",
+    "fetched_at"
+],
+"additionalProperties": false
+}
